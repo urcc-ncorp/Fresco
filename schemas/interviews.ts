@@ -11,6 +11,10 @@ export type CreateInterview = {
   protocolId: Protocol['id'];
 };
 
+export type CreateFollowUpInterview = {
+  sourceInterviewId: string;
+};
+
 const NumberStringBoolean = z.union([z.number(), z.string(), z.boolean()]);
 type NumberStringBoolean = z.infer<typeof NumberStringBoolean>;
 

@@ -1,9 +1,11 @@
 import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
-import { createInterview } from '~/actions/interviews';
+import { createInterview, createFollowUpInterview } from '~/actions/interviews';
 import { env } from '~/env';
 import trackEvent from '~/lib/analytics';
+import { prisma } from '~/lib/db';
 import { getAppSetting } from '~/queries/appSettings';
+import { getLatestCompletedInterview } from '~/queries/interviews';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,16 +27,6 @@ const handler = async (
     return NextResponse.redirect(url);
   }
 
-  const limitInterviews = await getAppSetting('limitInterviews');
-
-  // if limitInterviews is enabled
-  // Check cookies for interview already completed for this user for this protocol
-  // and redirect to finished page
-  if (limitInterviews && cookies().get(protocolId)) {
-    url.pathname = '/interview/finished';
-    return NextResponse.redirect(url);
-  }
-
   let participantIdentifier: string | undefined;
 
   // If the request is a POST, check the request body for a participant identifier.
@@ -48,6 +40,58 @@ const handler = async (
     const searchParams = req.nextUrl.searchParams;
     participantIdentifier =
       searchParams.get('participantIdentifier') ?? undefined;
+  }
+
+  // If a named participant already has a completed interview for this protocol,
+  // create a follow-up interview with their previous network pre-loaded.
+  if (participantIdentifier) {
+    const existingParticipant = await prisma.participant.findUnique({
+      where: { identifier: participantIdentifier },
+    });
+
+    if (existingParticipant) {
+      const latestCompleted = await getLatestCompletedInterview(
+        existingParticipant.id,
+        protocolId,
+      );
+
+      if (latestCompleted) {
+        const { createdInterviewId, error } = await createFollowUpInterview({
+          sourceInterviewId: latestCompleted.id,
+        });
+
+        if (error) {
+          url.pathname = '/onboard/error';
+          return NextResponse.redirect(url);
+        }
+
+        // eslint-disable-next-line no-console
+        console.log(
+          `Follow-up interview created (${createdInterviewId}) from source (${latestCompleted.id})`,
+        );
+
+        void trackEvent({
+          type: 'InterviewStarted',
+          metadata: {
+            isFollowUp: true,
+            sourceInterviewId: latestCompleted.id,
+          },
+        });
+
+        url.pathname = `/interview/${createdInterviewId}`;
+        return NextResponse.redirect(url);
+      }
+    }
+  }
+
+  const limitInterviews = await getAppSetting('limitInterviews');
+
+  // if limitInterviews is enabled
+  // Check cookies for interview already completed for this user for this protocol
+  // and redirect to finished page
+  if (limitInterviews && cookies().get(protocolId)) {
+    url.pathname = '/interview/finished';
+    return NextResponse.redirect(url);
   }
 
   // Create a new interview given the protocolId and participantId

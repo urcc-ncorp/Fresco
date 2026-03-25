@@ -7,6 +7,9 @@ export const getInterviews = createCachedFunction(async () => {
     include: {
       protocol: true,
       participant: true,
+      sourceInterview: {
+        select: { id: true },
+      },
     },
   });
   return interviews;
@@ -49,3 +52,24 @@ export const getInterviewById = (interviewId: string) =>
     },
     [`getInterviewById-${interviewId}`, 'getInterviewById'],
   )(interviewId);
+
+export const getLatestCompletedInterview = async (
+  participantId: string,
+  protocolId: string,
+) => {
+  const interview = await prisma.interview.findFirst({
+    where: {
+      participantId,
+      protocolId,
+      finishTime: { not: null },
+    },
+    orderBy: { finishTime: 'desc' },
+    select: {
+      id: true,
+      network: true,
+      protocolId: true,
+      participantId: true,
+    },
+  });
+  return interview;
+};

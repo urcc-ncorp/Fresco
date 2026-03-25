@@ -64,6 +64,13 @@ export const InterviewColumns = (): ColumnDef<
               {row.original.participant.identifier}
             </span>
           </Badge>
+
+          {/* Add Badge if Follow up Interview */}
+          {!!row.original.sourceInterviewId && (
+            <Badge variant="secondary" className="text-xs">
+              Follow-up
+            </Badge>
+          )}
         </div>
       );
     },

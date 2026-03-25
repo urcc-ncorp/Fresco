@@ -77,8 +77,14 @@ model Interview {
   currentStep   Int         @default(0)
   stageMetadata Json? // Used to store negative responses in tiestrength census and dyadcensus
 
+  // Follow-up interview chain
+  sourceInterviewId String?
+  sourceInterview   Interview?  @relation("FollowUpChain", fields: [sourceInterviewId], references: [id], onDelete: SetNull)
+  followUps         Interview[] @relation("FollowUpChain")
+
   @@index(fields: [protocolId])
   @@index([participantId])
+  @@index([sourceInterviewId])
 }
 
 model Participant {
