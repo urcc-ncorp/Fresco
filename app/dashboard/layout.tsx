@@ -1,8 +1,7 @@
 import NetlifyBadge from '~/components/NetlifyBadge';
-import { getAppSetting, requireAppNotExpired } from '~/queries/appSettings';
+import { requireAppNotExpired } from '~/queries/appSettings';
 import { requirePageAuth } from '~/utils/auth';
 import { NavigationBar } from './_components/NavigationBar';
-import UploadThingModal from './_components/UploadThingModal';
 
 export const metadata = {
   title: 'Network Canvas Fresco - Dashboard',
@@ -15,13 +14,9 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   await requireAppNotExpired();
   await requirePageAuth();
 
-  const uploadThingToken = await getAppSetting('uploadThingToken');
-
   return (
     <>
       <NavigationBar />
-      {!uploadThingToken && <UploadThingModal />}
-
       {children}
       <NetlifyBadge />
     </>

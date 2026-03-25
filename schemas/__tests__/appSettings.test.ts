@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   appSettingPreprocessedSchema,
   appSettingsSchema,
-  createUploadThingTokenFormSchema,
 } from '../appSettings';
 
 describe('App Settings Schema Validators', () => {
@@ -121,31 +120,6 @@ describe('App Settings Schema Validators', () => {
         disableAnalytics: true,
         disableSmallScreenOverlay: false,
       });
-    });
-  });
-  describe('UPLOADTHING_TOKEN Parsing through Schema', () => {
-    it("should parse token value from UPLOADTHING_TOKEN='token'", () => {
-      const validData = new FormData();
-      validData.append('uploadThingToken', "UPLOADTHING_TOKEN='ABCD1234Token'");
-
-      const result = createUploadThingTokenFormSchema.parse(validData);
-      expect(result.uploadThingToken).toBe('ABCD1234Token');
-    });
-
-    it('should remove surrounding quotes', () => {
-      const validData = new FormData();
-      validData.append('uploadThingToken', "'ABCD1234Token'");
-
-      const result = createUploadThingTokenFormSchema.parse(validData);
-      expect(result.uploadThingToken).toBe('ABCD1234Token');
-    });
-
-    it('should not change already correct tokens', () => {
-      const validData = new FormData();
-      validData.append('uploadThingToken', 'ABCD1234Token');
-
-      const result = createUploadThingTokenFormSchema.parse(validData);
-      expect(result.uploadThingToken).toBe('ABCD1234Token');
     });
   });
 });

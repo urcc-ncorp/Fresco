@@ -103,7 +103,6 @@ enum AppSetting {
   installationId
   disableAnalytics
   disableSmallScreenOverlay
-  uploadThingToken
 }
 
 model AppSettings {

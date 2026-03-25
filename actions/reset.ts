@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { env } from 'process';
 import { safeRevalidateTag } from '~/lib/cache';
-import { getUTApi } from '~/lib/uploadthing-server-helpers';
+import { clearAllFiles } from '~/lib/local-storage';
 import { requireApiAuth } from '~/utils/auth';
 import { prisma } from '~/lib/db';
 
@@ -39,13 +39,8 @@ export const resetAppSettings = async () => {
     safeRevalidateTag('getParticipants');
     safeRevalidateTag('getInterviews');
 
-    const utapi = await getUTApi();
-
-    // Remove all files from UploadThing:
-    await utapi.listFiles({}).then(({ files }) => {
-      const keys = files.map((file) => file.key);
-      return utapi.deleteFiles(keys);
-    });
+    // Remove all locally stored files (assets and exports):
+    await clearAllFiles();
 
     return { error: null, appSettings: null };
   } catch (error) {

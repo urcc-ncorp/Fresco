@@ -5,7 +5,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - .:/app/next-app
+      - fresco_data:/app/data
     restart: always
     ports:
       - 0:3000
@@ -36,6 +36,7 @@ services:
 
 volumes:
   postgres:
+  fresco_data:
 
 # Define a network, which allows containers to communicate
 # with each other, by using their container name as a hostname

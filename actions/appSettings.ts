@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { type z } from 'zod';
 import { safeRevalidateTag } from '~/lib/cache';
 import { type AppSetting, appSettingsSchema } from '~/schemas/appSettings';
@@ -42,9 +41,4 @@ export async function setAppSetting<
     const e = ensureError(error);
     throw new Error(`Failed to update appSettings: ${key}: ${e.message}`);
   }
-}
-
-export async function submitUploadThingForm(token: string) {
-  await setAppSetting('uploadThingToken', token);
-  redirect('/setup?step=3');
 }

@@ -11,7 +11,6 @@ async function getData() {
   return Promise.all([
     getProtocols(),
     getAppSetting('allowAnonymousRecruitment'),
-    getAppSetting('uploadThingToken'),
   ]);
 }
 

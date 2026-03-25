@@ -11,7 +11,6 @@ import {
 } from '~/components/ProtocolImport/JobReducer';
 import { AlertDialogDescription } from '~/components/ui/AlertDialog';
 import { APP_SUPPORTED_SCHEMA_VERSIONS } from '~/fresco.config';
-import { uploadFiles } from '~/lib/uploadthing-client-helpers';
 import { getExistingAssetIds, getProtocolByHash } from '~/queries/protocols';
 import { type AssetInsertType } from '~/schemas/protocol';
 import { DatabaseError } from '~/utils/databaseError';
@@ -215,51 +214,53 @@ export const useProtocolImport = () => {
           },
         });
 
-        /**
-         * To track overall upload progress we need to create two variables in
-         * the upper scope, one to track the total bytes to upload, and one to
-         * track the current bytes uploaded per file (uploads are done in
-         * parallel).
-         */
-        const totalBytesToUpload = newAssets.reduce((acc, asset) => {
-          return acc + asset.file.size;
-        }, 0);
-
-        const currentBytesUploaded: Record<string, number> = {};
-
         const files = newAssets.map((asset) => asset.file);
 
-        const uploadedFiles = await uploadFiles('assetRouter', {
-          files,
-          onUploadProgress({ progress, file }) {
-            const thisFileSize = newAssets.find(
-              (asset) => asset.name === file.name,
-            )!.file.size; // eg. 1000
+        const formData = new FormData();
+        files.forEach((file) => formData.append('files', file));
 
-            const thisCompletedBytes = thisFileSize * (progress / 100);
+        const uploadedFiles = await new Promise<
+          { key: string; name: string; url: string; size: number }[]
+        >((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', '/api/assets/upload');
 
-            currentBytesUploaded[file.name] ??= 0;
+          xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+              const progressPercent = Math.round(
+                (event.loaded / event.total) * 100,
+              );
+              dispatch({
+                type: 'UPDATE_STATUS',
+                payload: {
+                  id: fileName,
+                  status: 'Uploading assets',
+                  progress: progressPercent,
+                },
+              });
+            }
+          });
 
-            currentBytesUploaded[file.name] = thisCompletedBytes;
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(
+                JSON.parse(xhr.responseText) as {
+                  key: string;
+                  name: string;
+                  url: string;
+                  size: number;
+                }[],
+              );
+            } else {
+              reject(new Error(`Upload failed with status ${xhr.status}`));
+            }
+          });
 
-            // Sum all totals for all files to calculate overall progress
-            const totalUploadedBytes = Object.values(
-              currentBytesUploaded,
-            ).reduce((acc, cur) => acc + cur, 0);
+          xhr.addEventListener('error', () => {
+            reject(new Error('Upload request failed'));
+          });
 
-            const progressPercent = Math.round(
-              (totalUploadedBytes / totalBytesToUpload) * 100,
-            );
-
-            dispatch({
-              type: 'UPDATE_STATUS',
-              payload: {
-                id: fileName,
-                status: 'Uploading assets',
-                progress: progressPercent,
-              },
-            });
-          },
+          xhr.send(formData);
         });
 
         /**
@@ -285,7 +286,7 @@ export const useProtocolImport = () => {
             assetId: asset.assetId,
             name: asset.name,
             type: asset.type,
-            url: uploadedAsset.ufsUrl,
+            url: uploadedAsset.url,
             size: uploadedAsset.size,
           };
         });

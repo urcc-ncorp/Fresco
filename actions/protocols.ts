@@ -5,7 +5,7 @@ import { Prisma } from '~/lib/db/generated/client';
 import { safeRevalidateTag } from 'lib/cache';
 import { hash } from 'ohash';
 import { type z } from 'zod';
-import { getUTApi } from '~/lib/uploadthing-server-helpers';
+import { deleteAssetFiles } from '~/lib/local-storage';
 import { protocolInsertSchema } from '~/schemas/protocol';
 import { requireApiAuth } from '~/utils/auth';
 import { prisma } from '~/lib/db';
@@ -41,7 +41,7 @@ export async function deleteProtocols(hashes: string[]) {
     // eslint-disable-next-line no-console
     console.log('deleting protocol assets...');
 
-    await deleteFilesFromUploadThing(assetKeysToDelete.map((a) => a.key));
+    await deleteStoredAssetFiles(assetKeysToDelete.map((a) => a.key));
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('Error deleting protocol assets!', error);
@@ -100,24 +100,14 @@ export async function deleteProtocols(hashes: string[]) {
   }
 }
 
-async function deleteFilesFromUploadThing(fileKey: string | string[]) {
-  await requireApiAuth();
-
-  if (fileKey.length === 0) {
+async function deleteStoredAssetFiles(keys: string[]) {
+  if (keys.length === 0) {
     // eslint-disable-next-line no-console
     console.log('No assets to delete');
     return;
   }
 
-  const utapi = await getUTApi();
-
-  const response = await utapi.deleteFiles(fileKey);
-
-  if (!response.success) {
-    throw new Error('Failed to delete files from uploadthing');
-  }
-
-  return;
+  await deleteAssetFiles(keys);
 }
 
 export async function insertProtocol(
@@ -162,7 +152,7 @@ export async function insertProtocol(
   } catch (e) {
     // Attempt to delete any assets we uploaded to storage
     if (newAssets.length > 0) {
-      void deleteFilesFromUploadThing(newAssets.map((a) => a.key));
+      void deleteStoredAssetFiles(newAssets.map((a) => a.key));
     }
     // Check for protocol already existing
     if (e instanceof Prisma.PrismaClientKnownRequestError) {

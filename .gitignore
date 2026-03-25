@@ -48,3 +48,6 @@ yarn-error.log*
 
 *storybook.log
 storybook-static
+
+# Local File Storage
+/data/

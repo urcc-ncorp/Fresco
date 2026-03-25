@@ -9,7 +9,6 @@ Fresco brings Network Canvas interviews to the web browser. It's a pilot project
 - **Authentication**: Lucia Auth
 - **UI**: Tailwind CSS with Radix UI components
 - **State Management**: Redux Toolkit for interviewer components
-- **File Uploads**: UploadThing
 - **Testing**: Vitest with React Testing Library
 - **E2E Testing**: Playwright
 - **Package Manager**: pnpm

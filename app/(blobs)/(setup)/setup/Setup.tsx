@@ -5,7 +5,6 @@ import { parseAsInteger, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 import { containerClasses } from '~/components/ContainerClasses';
 import { cn } from '~/utils/shadcn';
-import ConnectUploadThing from '../_components/OnboardSteps/ConnectUploadThing';
 import CreateAccount from '../_components/OnboardSteps/CreateAccount';
 import Documentation from '../_components/OnboardSteps/Documentation';
 import ManageParticipants from '../_components/OnboardSteps/ManageParticipants';
@@ -20,10 +19,6 @@ export default function Setup({ setupData }: { setupData: SetupData }) {
     {
       label: 'Create Account',
       component: CreateAccount,
-    },
-    {
-      label: 'Connect UploadThing',
-      component: ConnectUploadThing,
     },
     {
       label: 'Upload Protocol',
@@ -58,7 +53,7 @@ export default function Setup({ setupData }: { setupData: SetupData }) {
       return;
     }
 
-    if (setupData.hasAuth && step === 2 && setupData.hasUploadThingToken) {
+    if (setupData.hasAuth && step === 2) {
       void setStep(3);
       return;
     }
@@ -66,7 +61,6 @@ export default function Setup({ setupData }: { setupData: SetupData }) {
     //  if we're past step 2 but we still have null values, go back to step 2
     if (setupData.hasAuth && step > 2) {
       if (
-        !setupData.hasUploadThingToken ||
         setupData.allowAnonymousRecruitment === null ||
         setupData.limitInterviews === null
       ) {

@@ -6,7 +6,7 @@ import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { hash as objectHash } from 'ohash';
 import { useState } from 'react';
-import { createFollowupInterviewFromDashboard } from '~/actions/interviews';
+import { createFollowUpInterviewFromDashboard } from '~/actions/interviews';
 import { DeleteInterviewsDialog } from '~/app/dashboard/interviews/_components/DeleteInterviewsDialog';
 import { ExportInterviewsDialog } from '~/app/dashboard/interviews/_components/ExportInterviewsDialog';
 import { Button } from '~/components/ui/Button';

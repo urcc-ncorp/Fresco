@@ -3,7 +3,7 @@ import { DialogDescription } from '@radix-ui/react-dialog';
 import { FileWarning, Loader2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { exportInterviews, updateExportTime } from '~/actions/interviews';
-import { deleteZipFromUploadThing } from '~/actions/uploadThing';
+import { deleteExportZip } from '~/actions/fileStorage';
 import { Button } from '~/components/ui/Button';
 import { cardClasses } from '~/components/ui/card';
 import {
@@ -69,7 +69,7 @@ export const ExportInterviewsDialog = ({
   );
 
   const handleConfirm = async () => {
-    let exportFilename = null; // Used to track the filename of the temp file uploaded to UploadThing
+    let exportFilename = null; // Used to track the filename of the temp file
 
     // start export process
     setIsExporting(true);
@@ -128,8 +128,8 @@ export const ExportInterviewsDialog = ({
       });
     } finally {
       if (exportFilename) {
-        // Attempt to delete the zip file from UploadThing.
-        void deleteZipFromUploadThing(exportFilename).catch((error) => {
+        // Attempt to delete the temporary zip file
+        void deleteExportZip(exportFilename).catch((error) => {
           const e = ensureError(error);
           void trackEvent({
             type: 'Error',
@@ -149,7 +149,7 @@ export const ExportInterviewsDialog = ({
             variant: 'default',
             title: 'Could not delete temporary file',
             description:
-              'We were unable to delete the temporary file containing your exported data, which is stored on your UploadThing account. Although extremely unlikely, it is possible that this file could be accessed by someone else. You can delete the file manually by visiting uploadthing.com and logging in with your GitHub account. Please use the feedback button to report this issue.',
+              'We were unable to delete the temporary file containing your exported data. Please use the feedback button to report this issue.',
           });
         });
       }

@@ -317,7 +317,6 @@ pnpm storybook      # Component testing
 - `@codaco/protocol-validation` - Protocol validation
 - `lucia` - Authentication
 - `nuqs` - URL state management
-- `uploadthing` - File uploads
 - `es-toolkit` - Modern lodash alternative
 - `luxon` - Date/time (not moment.js)
 

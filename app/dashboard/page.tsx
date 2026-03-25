@@ -9,7 +9,6 @@ import { requirePageAuth } from '~/utils/auth';
 import ActivityFeed from './_components/ActivityFeed/ActivityFeed';
 import { searchParamsCache } from './_components/ActivityFeed/SearchParams';
 import SummaryStatistics from './_components/SummaryStatistics/SummaryStatistics';
-import UpdateUploadThingTokenAlert from './_components/UpdateUploadThingTokenAlert';
 import AnonymousRecruitmentWarning from './protocols/_components/AnonymousRecruitmentWarning';
 
 export default async function Home({
@@ -31,9 +30,6 @@ export default async function Home({
         />
         <Suspense fallback={null}>
           <AnonymousRecruitmentWarning />
-        </Suspense>
-        <Suspense fallback={null}>
-          <UpdateUploadThingTokenAlert />
         </Suspense>
       </ResponsiveContainer>
       <SummaryStatistics />

@@ -5,7 +5,7 @@
 ### `/app` - Next.js App Router
 - **`(blobs)/`** - Setup and authentication pages
 - **`(interview)/`** - Interview interface and routing
-- **`api/`** - API routes (analytics, uploadthing)
+- **`api/`** - API routes (analytics)
 - **`dashboard/`** - Admin dashboard pages and components
 
 ### `/components` - Shared UI Components

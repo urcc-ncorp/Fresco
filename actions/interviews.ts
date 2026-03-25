@@ -34,7 +34,7 @@ import { requireApiAuth } from '~/utils/auth';
 import { prisma } from '~/lib/db';
 import { ensureError } from '~/utils/ensureError';
 import { addEvent } from './activityFeed';
-import { uploadZipToUploadThing } from './uploadThing';
+import { uploadExportZip } from './fileStorage';
 
 export async function deleteInterviews(data: DeleteInterviews) {
   await requireApiAuth();
@@ -132,7 +132,7 @@ export const exportInterviews = async (
     tempFilePaths.push(archiveResult.path);
 
     exportStage = 'uploading zip file';
-    const result = await uploadZipToUploadThing(archiveResult);
+    const result = await uploadExportZip(archiveResult);
 
     void trackEvent({
       type: 'DataExported',

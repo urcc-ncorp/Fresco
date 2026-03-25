@@ -65,8 +65,9 @@ RUN addgroup --system --gid 1001 nodejs && \
 # Copy public assets
 COPY --from=builder /app/public ./public
 
-# Create .next directory with correct permissions
+# Create .next directory and data directories with correct permissions
 RUN mkdir .next && chown nextjs:nodejs .next
+RUN mkdir -p data/assets data/exports && chown -R nextjs:nodejs data
 
 # Copy built application with correct permissions
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
