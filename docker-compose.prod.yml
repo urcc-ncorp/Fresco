@@ -1,6 +1,7 @@
 services:
   fresco:
-    image: "ghcr.io/complexdatacollective/fresco:latest"
+    image: "fresco"
+    build: "https://github.com/urcc-ncorp/Fresco.git"
     depends_on:
       postgres:
         condition: service_healthy
