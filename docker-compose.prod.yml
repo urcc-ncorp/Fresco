@@ -1,14 +1,20 @@
 services:
   fresco:
+    container_name: fresco
     image: "fresco"
     build: "https://github.com/urcc-ncorp/Fresco.git"
     volumes:
       - fresco_data:/app/data
-    restart: always
+    restart: unless-stopped
     ports:
-      - 0:3000
+      - 3000:3000
     env_file:
       - .env
 
 volumes:
   fresco_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/fresco
