@@ -2,44 +2,13 @@ services:
   fresco:
     image: "fresco"
     build: "https://github.com/urcc-ncorp/Fresco.git"
-    depends_on:
-      postgres:
-        condition: service_healthy
     volumes:
       - fresco_data:/app/data
     restart: always
     ports:
       - 0:3000
-    networks:
-      - fresco_network
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/fresco
-      DATABASE_URL_UNPOOLED: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/fresco
     env_file:
       - .env
-
-  postgres:
-    image: postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_DB: fresco
-    env_file:
-      - .env
-    volumes:
-      - postgres:/var/lib/postgresql/fresco_data
-    healthcheck:
-      test: ["CMD", "pg_isready", '-U', '${POSTGRES_USER}']
-      interval: 5s
-      timeout: 10s
-      retries: 5
-    networks:
-      - fresco_network
 
 volumes:
-  postgres:
   fresco_data:
-
-# Define a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-networks:
-  fresco_network:
