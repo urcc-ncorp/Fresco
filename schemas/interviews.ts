@@ -13,6 +13,7 @@ export type CreateInterview = {
 
 export type CreateFollowUpInterview = {
   sourceInterviewId: string;
+  followUpLabel: string;
 };
 
 const NumberStringBoolean = z.union([z.number(), z.string(), z.boolean()]);

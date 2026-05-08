@@ -41,9 +41,10 @@ export const ActionsDropdown = ({ row }: { row: Row<Interview> }) => {
   };
 
   // Create Follow Up Action Handling Function
-  const handleFollowUp = async () => {
+  const handleFollowUp = async (label: string) => {
     const result = await createFollowUpInterviewFromDashboard({
       sourceInterviewId: row.original.id,
+      followUpLabel: label
     });
 
     if (result.error) {
@@ -57,7 +58,7 @@ export const ActionsDropdown = ({ row }: { row: Row<Interview> }) => {
 
     toast({
       description:
-        'Follow-up interview created with previous network data pre-loaded.',
+        `${label} interview created with previous network data pre-loaded.`,
     });
   };
 
@@ -83,18 +84,45 @@ export const ActionsDropdown = ({ row }: { row: Row<Interview> }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+          {!row.original.followUpLabel && (
           <DropdownMenuItem
             disabled={!row.original.finishTime}
-            onClick={() => void handleFollowUp()}
+            onClick={() => void handleFollowUp('Updated/Revised')}
           >
-            Create Follow-Up
+            Create Updated/Revised
           </DropdownMenuItem>
+          )}
+
+          {(
+            row.original.followUpLabel !== '6-Month'
+            && row.original.followUpLabel !== '6-Month Updated/Revised'
+          ) && (
+          <DropdownMenuItem
+            disabled={!row.original.finishTime }
+            onClick={() => void handleFollowUp('6-Month')}
+          >
+            Create 6-Month Follow-Up
+          </DropdownMenuItem>
+          )}
+
+          {row.original.followUpLabel === '6-Month' && (
+          <DropdownMenuItem
+            disabled={!row.original.finishTime}
+            onClick={() => void handleFollowUp('6-Month Updated/Revised')}
+          >
+            Create 6-Month Updated/Revised
+          </DropdownMenuItem>
+          )}
+
           <DropdownMenuItem onClick={() => handleDelete(row.original)}>
             Delete
           </DropdownMenuItem>
+
           <DropdownMenuItem onClick={() => handleExport(row.original)}>
             Export
           </DropdownMenuItem>
+
           <Link href={`/interview/${row.original.id}`}>
             <DropdownMenuItem>Enter Interview</DropdownMenuItem>
           </Link>

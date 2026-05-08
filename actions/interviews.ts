@@ -312,10 +312,8 @@ export async function createInterview(data: CreateInterview) {
   }
 }
 
-export async function createFollowUpInterview(
-  data: CreateFollowUpInterview,
-) {
-  const { sourceInterviewId } = data;
+export async function createFollowUpInterview(data: CreateFollowUpInterview) {
+  const { sourceInterviewId, followUpLabel } = data;
 
   try {
     const sourceInterview = await prisma.interview.findUnique({
@@ -350,12 +348,13 @@ export async function createFollowUpInterview(
         sourceInterview: {
           connect: { id: sourceInterviewId },
         },
+        followUpLabel: followUpLabel,
       },
     });
 
     void addEvent(
       'Interview Started',
-      `Follow-up interview started for participant "${
+      `${followUpLabel} interview started for participant "${
         createdInterview.participant.label ??
         createdInterview.participant.identifier
       }"`,
@@ -386,9 +385,7 @@ export async function createFollowUpInterview(
   }
 }
 
-export async function createFollowUpInterviewFromDashboard(
-  data: CreateFollowUpInterview,
-) {
+export async function createFollowUpInterviewFromDashboard(data: CreateFollowUpInterview) {
   await requireApiAuth();
   return createFollowUpInterview(data);
 }

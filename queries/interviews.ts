@@ -69,6 +69,7 @@ export const getLatestCompletedInterview = async (
       network: true,
       protocolId: true,
       participantId: true,
+      followUpLabel: true,
     },
   });
   return interview;

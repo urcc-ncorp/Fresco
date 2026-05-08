@@ -68,7 +68,7 @@ export const InterviewColumns = (): ColumnDef<
           {/* Add Badge if Follow up Interview */}
           {!!row.original.sourceInterviewId && (
             <Badge variant="secondary" className="text-xs">
-              Follow-up
+              {row.original.followUpLabel}
             </Badge>
           )}
         </div>

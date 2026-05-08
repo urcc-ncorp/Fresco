@@ -81,6 +81,7 @@ model Interview {
   sourceInterviewId String?
   sourceInterview   Interview?  @relation("FollowUpChain", fields: [sourceInterviewId], references: [id], onDelete: SetNull)
   followUps         Interview[] @relation("FollowUpChain")
+  followUpLabel     String?
 
   @@index(fields: [protocolId])
   @@index([participantId])

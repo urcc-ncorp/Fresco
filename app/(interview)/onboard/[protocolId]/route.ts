@@ -56,8 +56,22 @@ const handler = async (
       );
 
       if (latestCompleted) {
+        let label = "Updated/Revised";
+
+        switch (latestCompleted.followUpLabel) {
+          case "Updated/Revised":
+            label = "6-Month";
+            break;
+
+          case "6-Month":
+          case "6-Month Updated/Revised":
+            label = "6-Month Updated/Revised";
+            break;
+        }
+
         const { createdInterviewId, error } = await createFollowUpInterview({
           sourceInterviewId: latestCompleted.id,
+          followUpLabel: label,
         });
 
         if (error) {
@@ -67,7 +81,7 @@ const handler = async (
 
         // eslint-disable-next-line no-console
         console.log(
-          `Follow-up interview created (${createdInterviewId}) from source (${latestCompleted.id})`,
+          `${label} interview created (${createdInterviewId}) from source (${latestCompleted.id})`,
         );
 
         void trackEvent({
